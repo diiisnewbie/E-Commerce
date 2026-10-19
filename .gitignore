@@ -1,6 +1,6 @@
 # =============================================================================
 # ROOT .gitignore — E-Commerce Monorepo
-# Áp dụng cho toàn bộ repo; backend/ và frontend/ có thể có .gitignore riêng
+# Áp dụng cho toàn bộ repo; Backend/ và frontend/ có thể có .gitignore riêng
 # thêm vào (không thay thế) file này.
 # =============================================================================
 
@@ -36,20 +36,20 @@ private-key*
 # =============================================================================
 
 # Build output
-backend/target/
+Backend/target/
 
 # Maven wrapper jar (chỉ cần properties, không cần jar)
-backend/.mvn/wrapper/maven-wrapper.jar
+Backend/.mvn/wrapper/maven-wrapper.jar
 
 # Spring Boot application PID file
-backend/*.pid
+Backend/*.pid
 
 # Log files
-backend/logs/
-backend/*.log
+Backend/logs/
+Backend/*.log
 
 # Spring Boot devtools restart trigger
-backend/.reloadtrigger
+Backend/.reloadtrigger
 
 # =============================================================================
 # FRONTEND — Node / Vite / React
