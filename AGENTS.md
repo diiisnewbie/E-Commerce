@@ -27,7 +27,7 @@ Dự án: Website E-commerce Fullstack (Java 21 + Spring Boot 4.1.x, React + Vit
 - Không đổi kiến trúc modular monolith, response format chuẩn, mã lỗi (trong `docs/error-codes.md`) hay quy ước đặt tên.
 - Frontend tuân thủ mục 4.7 của `docs/project-overview.md` (dùng UI library, không thêm Redux/Zustand, không viết nhiều CSS tùy biến).
 - Không mở rộng sang các mục "ngoài phạm vi" của dự án.
-- Mã backend chỉ đặt trong `backend/`, mã frontend chỉ đặt trong `frontend/`; không tạo mã nguồn ở thư mục gốc. Cấu trúc đầy đủ: mục 4.1 của `docs/project-overview.md`.
+- Mã backend chỉ đặt trong `Backend/`, mã frontend chỉ đặt trong `frontend/`; không tạo mã nguồn ở thư mục gốc. Cấu trúc đầy đủ: mục 4.1 của `docs/project-overview.md`.
 
 **Bảo mật và dữ liệu**
 - Không trả Entity trực tiếp ra API; bắt buộc map sang DTO.
@@ -69,15 +69,15 @@ Lưu ý:
 
 > Cập nhật và hoàn thiện sau khi hoàn thành Phase 0.
 
-Chạy mọi lệnh từ thư mục gốc của repo và không đổi thư mục làm việc của terminal (dùng subshell hoặc `--prefix`), để lệnh sau không chạy nhầm trong `backend/` hay `frontend/`.
+Chạy mọi lệnh từ thư mục gốc của repo và không đổi thư mục làm việc của terminal (dùng subshell hoặc `--prefix`), để lệnh sau không chạy nhầm trong `Backend/` hay `frontend/`.
 
 ```bash
 # Hạ tầng (PostgreSQL, Redis) - docker-compose.yml ở thư mục gốc
 docker compose up -d
 
 # Backend
-(cd backend && ./mvnw clean verify)        # Build + toàn bộ unit và integration test
-(cd backend && ./mvnw spring-boot:run)     # Khởi động ứng dụng backend
+(cd Backend && ./mvnw clean verify)        # Build + toàn bộ unit và integration test
+(cd Backend && ./mvnw spring-boot:run)     # Khởi động ứng dụng backend
 
 # Frontend
 npm --prefix frontend install

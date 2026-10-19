@@ -65,7 +65,7 @@ Không tự mở rộng phạm vi nếu chưa được yêu cầu.
 |---|---|---|---|
 | Backend | Java | 21 (LTS) | Ngôn ngữ chính |
 | Backend framework | Spring Boot | 4.1.x (bản 4.x mới nhất khi khởi tạo; xem mục 3.1) | Xây dựng ứng dụng backend |
-| Build tool | Maven (dùng Maven Wrapper `backend/mvnw`) | — | Build, quản lý dependency |
+| Build tool | Maven (dùng Maven Wrapper `Backend/mvnw`) | — | Build, quản lý dependency |
 | Security | Spring Security | theo Spring Boot | Xác thực và phân quyền |
 | Persistence | Spring Data JPA (Hibernate) | theo Spring Boot | Truy cập dữ liệu |
 | Database | PostgreSQL | 16 | Lưu dữ liệu nghiệp vụ |
@@ -92,7 +92,7 @@ Quy định:
 - Các nhánh Spring Boot 3.x (kể cả 3.5) đã hết hỗ trợ mã nguồn mở từ 30/06/2026, nên không còn bản vá bảo mật miễn phí.
 - Spring Boot 4.0 sẽ hết hỗ trợ mã nguồn mở vào 31/12/2026, vì vậy dự án khởi tạo từ tháng 10/2026 dùng nhánh 4.1.x.
 - Spring Boot 4 chạy trên Spring Framework 7 và Spring Security 7, tối thiểu Java 17 (dự án dùng Java 21).
-- Kiểm tra số phiên bản chính xác trên start.spring.io khi tạo project, và ghi lại vào `backend/pom.xml`.
+- Kiểm tra số phiên bản chính xác trên start.spring.io khi tạo project, và ghi lại vào `Backend/pom.xml`.
 - Các thư viện ngoài Spring (springdoc, Testcontainers, thư viện JWT) phải chọn bản tương thích với Spring Boot 4. Xác nhận ở Phase 0 trước khi thêm vào `pom.xml`.
 - Những điểm khác biệt so với Spring Boot 3 mà AI hay sinh sai được liệt kê trong `AGENTS.md`, mục 5.
 
@@ -113,7 +113,7 @@ Quy định:
 
 ### Cấu trúc repository
 
-Một repository (monorepo) gồm hai thư mục mã nguồn là `backend/` và `frontend/`. Tài liệu, hạ tầng và cấu hình dùng chung nằm ở thư mục gốc.
+Một repository (monorepo) gồm hai thư mục mã nguồn là `Backend/` và `frontend/`. Tài liệu, hạ tầng và cấu hình dùng chung nằm ở thư mục gốc.
 
 ```
 ecommerce-platform/
@@ -123,7 +123,7 @@ ecommerce-platform/
 ├── .env.example                   # biến môi trường mẫu, không chứa secret
 ├── .github/workflows/             # CI (GitHub Actions)
 ├── docs/                          # tài liệu dự án (xem mục 11)
-├── backend/
+├── Backend/                       # tên chuẩn của thư mục mã nguồn backend (xem D-0-07 ở phase-0)
 │   ├── pom.xml
 │   ├── mvnw
 │   └── src/
@@ -136,11 +136,11 @@ ecommerce-platform/
 ```
 
 Quy định:
-- Toàn bộ mã nguồn backend chỉ nằm trong `backend/`, frontend chỉ nằm trong `frontend/`. Không tạo mã nguồn ở thư mục gốc.
+- Toàn bộ mã nguồn backend chỉ nằm trong `Backend/`, frontend chỉ nằm trong `frontend/`. Không tạo mã nguồn ở thư mục gốc.
 - Backend và frontend build, test và chạy độc lập; chúng chỉ giao tiếp qua REST API.
 - Nếu dùng Claude Code, thêm `CLAUDE.md` ở thư mục gốc chỉ chứa một dòng `@AGENTS.md` để không phải giữ hai bản nội dung.
 
-Ví dụ package backend tham khảo (nằm trong `backend/src/main/java/`):
+Ví dụ package backend tham khảo (nằm trong `Backend/src/main/java/`):
 
 ```
 com.app.backend
@@ -373,7 +373,7 @@ Một sự kiện được xử lý lặp không được tạo ra nhiều đơn
 - **Concurrency test:** chạy nhiều luồng cùng mua một sản phẩm trên PostgreSQL thật; kiểm tra tồn kho không âm và số đơn thành công không vượt tồn kho.
 - **Race test (Phase 5):** chạy song song thanh toán và tác vụ hết hạn trên cùng một đơn; kiểm tra đúng một bên thắng và kho được hoàn đúng một lần hoặc không hoàn.
 - **Test bảo mật:** mỗi endpoint được bảo vệ cần có ít nhất một test được phép và một test bị từ chối (chưa đăng nhập, sai vai trò).
-- **CI (GitHub Actions):** mỗi lần push/PR chạy hai job riêng: build và toàn bộ test cho `backend/`, build (và test nếu có) cho `frontend/`. Thiết lập ở Phase 0 và giữ xanh trong suốt dự án.
+- **CI (GitHub Actions):** mỗi lần push/PR chạy hai job riêng: build và toàn bộ test cho `Backend/`, build (và test nếu có) cho `frontend/`. Thiết lập ở Phase 0 và giữ xanh trong suốt dự án.
 
 ---
 
@@ -386,8 +386,8 @@ Backend là trọng tâm. Mỗi phase có thêm một lát cắt frontend tối 
 Mục tiêu: dựng skeleton dự án và môi trường phát triển.
 
 Backend/hạ tầng:
-- Tạo cấu trúc repository gồm `backend/`, `frontend/`, `docs/` (xem mục 4.1).
-- Khởi tạo backend Java 21 + Spring Boot 4.1.x (Maven) trong `backend/`.
+- Tạo cấu trúc repository gồm `Backend/`, `frontend/`, `docs/` (xem mục 4.1).
+- Khởi tạo backend Java 21 + Spring Boot 4.1.x (Maven) trong `Backend/`.
 - Tạo `docker-compose.yml` ở thư mục gốc (PostgreSQL, Redis).
 - Kết nối PostgreSQL; cấu hình Flyway.
 - Tạo health endpoint.
