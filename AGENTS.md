@@ -4,6 +4,7 @@ Dự án: Website E-commerce Fullstack (Java 21 + Spring Boot 4.1.x, React + Vit
 
 - Tổng quan, phạm vi, quy ước code, quyết định mặc định và roadmap: `docs/project-overview.md`.
 - Đặc tả chi tiết từng phase: `docs/phase-N-*.md`.
+- Tiến độ, các hạng mục đã hoàn thành theo phase (kèm bằng chứng): `docs/progress.md` — **file local, không commit** (nội dung chung thì ghi ở tài liệu/code).
 - File này chỉ chứa quy trình và quy tắc hành động. Không lặp lại nội dung của `docs/project-overview.md` ngoài một số quy tắc rủi ro cao được nhắc lại có chủ đích ở mục 2. Khi hai nơi mâu thuẫn, **dừng lại và hỏi**.
 
 ---
@@ -12,6 +13,7 @@ Dự án: Website E-commerce Fullstack (Java 21 + Spring Boot 4.1.x, React + Vit
 
 - Đọc `docs/project-overview.md` để nắm các ràng buộc chung và quyết định mặc định.
 - Đọc tài liệu `docs/phase-N-*.md` tương ứng với phase được giao. Nếu chưa có tài liệu phase, **không viết code**; báo lại để viết tài liệu trước.
+- Đọc `docs/progress.md` để biết hạng mục nào của phase đã/chưa hoàn thành, tránh làm lại hoặc tick nhầm.
 - Kiểm tra cấu trúc repository và code hiện có trước khi đề xuất thay đổi.
 - Xác định các file dự kiến thêm/sửa/xóa và giải thích lý do ngắn gọn.
 - Nếu thiếu thông tin nghiệp vụ hoặc gặp điểm mâu thuẫn có thể làm thay đổi thiết kế: dừng lại và hỏi trước khi triển khai. Không tự suy diễn yêu cầu chưa được xác nhận.
@@ -62,6 +64,7 @@ Lưu ý:
 - Với thay đổi nhỏ (sửa tên, sửa lỗi chính tả, chỉnh cấu hình nhỏ), có thể rút gọn mục 2, 3, 6, 7. Mục 4 và 5 luôn phải có.
 - Không tuyên bố test hoặc build thành công nếu chưa thực sự chạy lệnh.
 - Không tự chuyển trạng thái phase sang `Done` trong bảng roadmap; chỉ chủ dự án chuyển sau khi có bằng chứng kiểm tra.
+- Ngay sau khi báo cáo, cập nhật `docs/progress.md`: tick ☑ từng hạng mục đã hoàn thành kèm bằng chứng ở cột tương ứng; chỉ tick khi mục 4/5 của báo cáo đã có kết quả thật. Trạng thái cấp phase trong file này cũng chỉ chủ dự án đổi (quy tắc chi tiết: `docs/progress.md` mục 1). **Đây là file local — không đưa vào commit/push.**
 
 ---
 
