@@ -1,0 +1,148 @@
+# =============================================================================
+# ROOT .gitignore — E-Commerce Monorepo
+# Áp dụng cho toàn bộ repo; backend/ và frontend/ có thể có .gitignore riêng
+# thêm vào (không thay thế) file này.
+# =============================================================================
+
+# =============================================================================
+# SECRETS & ENVIRONMENT — KHÔNG ĐƯỢC COMMIT
+# =============================================================================
+
+# File biến môi trường thật (chứa password, secret key, API key, ...)
+# .env.example thì được commit (không có secret thật)
+.env
+.env.local
+.env.*.local
+*.env
+
+# File cấu hình chứa secret (nếu đặt tên theo pattern này)
+*secret*
+*secrets*
+*credential*
+*credentials*
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.truststore
+
+# JWT secret hoặc private key nếu lỡ tạo file riêng
+jwt-secret*
+private-key*
+
+# =============================================================================
+# BACKEND — Java / Maven
+# =============================================================================
+
+# Build output
+backend/target/
+
+# Maven wrapper jar (chỉ cần properties, không cần jar)
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot application PID file
+backend/*.pid
+
+# Log files
+backend/logs/
+backend/*.log
+
+# Spring Boot devtools restart trigger
+backend/.reloadtrigger
+
+# =============================================================================
+# FRONTEND — Node / Vite / React
+# =============================================================================
+
+# Dependencies
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# Vite cache
+frontend/.vite/
+
+# Test coverage
+frontend/coverage/
+
+# =============================================================================
+# DOCKER / TESTCONTAINERS
+# =============================================================================
+
+# Docker override file (thường chứa config local không dùng trong CI)
+docker-compose.override.yml
+
+# Testcontainers local reuse state
+.testcontainers.properties
+
+# =============================================================================
+# IDE & EDITOR
+# =============================================================================
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+# Eclipse / STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# =============================================================================
+# HỆ ĐIỀU HÀNH
+# =============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# =============================================================================
+# MISC
+# =============================================================================
+
+# Patch files
+*.orig
+*.rej
+
+# Compressed archives (không commit archive vào repo)
+*.zip
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Tạm thời / scratch
+scratch/
+tmp/
+temp/
