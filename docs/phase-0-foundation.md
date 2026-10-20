@@ -1,6 +1,7 @@
 # Phase 0 — Khởi tạo (Foundation)
 
-> **Trạng thái:** Not started  
+> **Trạng thái:** Done — chủ dự án xác nhận 2026-10-19 (smoke test + CI xanh; xem `docs/progress.md`).  
+> **Cập nhật:** 2026-10-20 — rà soát kỹ thuật sau Done (A1–A4, B5–B6, C7–C9), đối chiếu với code đã commit `17f8fc4`.  
 > **Phụ thuộc:** Không có phase tiên quyết.  
 > **Tài liệu liên quan:** [`docs/project-overview.md`](./project-overview.md), [`AGENTS.md`](../AGENTS.md)
 
@@ -29,7 +30,7 @@ Thiết lập nền tảng kỹ thuật cho toàn bộ dự án: cấu trúc th�
 ### 1.3. Ngoài phạm vi Phase 0
 
 - Bất kỳ logic nghiệp vụ nào (auth, product, order, v.v.).
-- Bảo mật Spring Security đầy đủ (chỉ cấu hình permit-all tạm thời cho health endpoint).
+- Bảo mật Spring Security đầy đủ (chỉ cấu hình permit-all tạm thời cho endpoint public của Phase 0: health, actuator health, swagger — xem D-0-06).
 - Schema bảng nghiệp vụ (users, products, v.v.) — thuộc Phase 1+.
 - Tối ưu hiệu năng, responsive, animation frontend.
 
@@ -42,19 +43,19 @@ Thiết lập nền tảng kỹ thuật cho toàn bộ dự án: cấu trúc th�
 | Thành phần | Phiên bản | Ghi chú |
 |---|---|---|
 | Java | **21** (LTS) | Bắt buộc; dùng Java record, sealed class và virtual thread nếu cần |
-| Spring Boot | **4.1.x** (bản mới nhất nhánh 4.1 khi khởi tạo) | Spring Boot 3.x hết hỗ trợ OSS 30/06/2026; xem lý do đầy đủ ở `project-overview.md` mục 3.1 |
+| Spring Boot | **4.1.x** (đã cài **4.1.1**) | 4.1.0 GA **10/06/2026**, hỗ trợ OSS đến **31/07/2027**; 4.0 hết OSS 31/12/2026 — xem mục 2.2 và `project-overview.md` mục 3.1 |
 | Maven Wrapper | `mvnw` kèm theo Spring Initializr | Không yêu cầu cài Maven toàn cục |
 | PostgreSQL | **16** (image `postgres:16-alpine`) | `alpine` nhẹ hơn, đủ cho dev |
 | Redis | **7** (image `redis:7-alpine`) | `alpine` nhẹ hơn, đủ cho dev |
 | Flyway | Theo Spring Boot BOM | Boot 4 bắt buộc `spring-boot-starter-flyway` + `flyway-database-postgresql`; **không** dùng `flyway-core` trần (xem mục 2.4) |
-| Testcontainers | Theo BOM của Spring Boot 4.1 | Dùng `testcontainers-bom` do Boot quản lý; không pin cứng — xác nhận bằng `./mvnw dependency:tree` lúc cài |
+| Testcontainers | Theo BOM của Spring Boot 4.1 (đã cài artifact **2.x**: `testcontainers-postgresql`, `testcontainers-junit-jupiter`) | Testcontainers 2.x đổi tên artifact (bản 1.x đóng băng ở 1.21.x); không pin version — BOM của Boot quản lý (xem mục 2.4) |
 | Node.js | **22 LTS** | Node 20 EOL 30/04/2026; overview quy định "20+" nên 22 LTS vẫn hợp lệ (D-0-08) |
-| React | **19.x** | Sinh bởi `npm create vite` bản mới nhất; overview quy định "18+" nên 19 vẫn hợp lệ (D-0-08) |
-| Vite | **bản mới nhất** khi scaffold | Không hạ về 5.x; giữ nguyên bản do create-vite sinh để tương thích Node 22 (D-0-08) |
-| Vitest | Bản tương thích Vite đã chọn | Test runner frontend, thay cho việc để lệnh `npm --prefix frontend test` của AGENTS.md chết (D-0-09) |
-| Ant Design | **5.x** (bản mới nhất) | UI library đã chốt ở mục 2.3; xác nhận bản hỗ trợ React 19 trước khi cài |
+| React | **19.x** (đã cài 19.3.1) | Sinh bởi `npm create vite` bản mới nhất; overview quy định "18+" nên 19 vẫn hợp lệ (D-0-08) |
+| Vite | **bản mới nhất** khi scaffold (đã cài 8.3.4) | Không hạ về 5.x; giữ nguyên bản do create-vite sinh để tương thích Node 22 (D-0-08) |
+| Vitest | Bản tương thích Vite đã chọn (đã cài 5.0.5) | Test runner frontend, thay cho việc để lệnh `npm --prefix frontend test` của AGENTS.md chết (D-0-09) |
+| Ant Design | **6.x** (đã cài 6.6.6; `@ant-design/icons` 6.3.4) | UI library chốt ở mục 2.3; antd 6 là nhánh dành cho React 19 (D-0-04) |
 | Lombok, devtools | Theo Spring Boot BOM | Có sẵn từ skeleton, giữ nguyên (D-0-11) |
-| springdoc-openapi | **3.x** | Phiên bản tương thích Spring Boot 4.x; xác nhận trước khi thêm vào `pom.xml` (xem R-0-07) |
+| springdoc-openapi | **3.x** (đã cài 3.1.1) | Đã xác nhận tương thích Boot 4 — Swagger UI load OK 2026-10-19 (Q-0-09); giữ nhánh dự phòng R-0-07 nếu cần |
 
 ### 2.2. Quyết định Spring Boot 4.1.x — Đã chốt
 
@@ -62,12 +63,12 @@ Thiết lập nền tảng kỹ thuật cho toàn bộ dự án: cấu trúc th�
 
 **Lý do** (chi tiết đầy đủ tại `project-overview.md` mục 3.1):
 - Spring Boot 3.x (kể cả 3.5) hết hỗ trợ mã nguồn mở từ **30/06/2026** — không còn bản vá bảo mật miễn phí.
-- Dự án khởi tạo tháng 10/2026 → nhánh 4.1.x là lựa chọn duy nhất còn được hỗ trợ OSS (hết hỗ trợ 31/12/2026, đủ để hoàn thành dự án portfolio).
+- Dự án khởi tạo tháng 10/2026 → nhánh 4.1.x là lựa chọn duy nhất còn được hỗ trợ OSS. **4.1.0 GA 10/06/2026, hạn OSS 31/07/2027** (nguồn: spring.io blog 10/06/2026 và endoflife.date; lưu ý 31/12/2026 là hạn OSS của **4.0**, không phải 4.1 — đợt release dự kiến tháng 5/2026 bị lùi sang tháng 6 do CVE). Đủ để hoàn thành dự án portfolio.
 - Spring Boot 4 chạy trên Spring Framework 7 và Spring Security 7, yêu cầu Java 17+ (dự án dùng Java 21).
 
 **Lưu ý quan trọng khi code với Spring Boot 4:** Xem `AGENTS.md` mục 5 để tránh các lỗi thường gặp khi AI sinh code theo kiểu Spring Boot 3 (tên starter thay đổi, package Jackson 3, Security 7, v.v.).
 
-### 2.3. UI Library Frontend — Ant Design 5.x
+### 2.3. UI Library Frontend — Ant Design 6.x
 
 **Lý do chọn Ant Design:**
 - Bộ component đầy đủ (Table, Form, Modal, Layout) đáp ứng toàn bộ nhu cầu frontend của dự án.
@@ -79,7 +80,7 @@ Thiết lập nền tảng kỹ thuật cho toàn bộ dự án: cấu trúc th�
 
 **Cấu hình:** Dùng tree-shaking mặc định của Vite + `@ant-design/icons` riêng (chỉ import icon cần dùng).
 
-**Tương thích React 19:** Cài bản antd 5.x mới nhất (đã hỗ trợ React 19); nếu tại thời điểm khởi tạo antd đã có bản major mới ổn định, ghi lại phiên bản thực tế vào mục 2.1 thay vì đoán.
+**Tương thích React 19:** Dùng **antd 6.x** — nhánh hiện hành sinh cho React 19 (`package.json` đã cài antd 6.6.6 + `@ant-design/icons` 6.3.4 với React 19.3.1, 2026-10-19). antd 5.x là nhánh thế hệ trước, không chọn cho project mới. Ghi rõ phiên bản thực tế vào mục 2.1 (O-0-03).
 
 ### 2.4. Dependency cho `pom.xml` (đã đối chiếu Spring Boot 4.0 Migration Guide)
 
@@ -108,17 +109,19 @@ org.flywaydb:flyway-database-postgresql      <!-- module dialect, version theo B
 <!-- Monitoring (quyết định Q-0-02: bật Actuator, chỉ expose health) -->
 spring-boot-starter-actuator
 
-<!-- API Docs — xác nhận artifact ID tương thích Spring Boot 4 trước khi thêm -->
-springdoc-openapi-starter-webmvc-ui (3.x)
+<!-- API Docs — đã xác nhận tương thích Boot 4 (Q-0-09) -->
+springdoc-openapi-starter-webmvc-ui (đã cài 3.1.1)
 
 <!-- Testing -->
 org.springframework.boot:spring-boot-testcontainers (scope test)
-org.testcontainers:testcontainers-bom (import scope, quản lý phiên bản)
-org.testcontainers:postgresql (scope test)
-org.testcontainers:junit-jupiter (scope test)
+org.springframework.boot:spring-boot-restclient (scope test)      <!-- Boot 4: support cho TestRestTemplate (xem 5.2.1) -->
+org.testcontainers:testcontainers-postgresql (scope test)         <!-- Testcontainers 2.x: tên artifact mới -->
+org.testcontainers:testcontainers-junit-jupiter (scope test)      <!-- không khai báo version — BOM của spring-boot-starter-parent quản lý -->
 ```
 
 > **Vì sao không thêm `flyway-core`:** từ Boot 4, Flyway auto-configuration nằm ở `spring-boot-starter-flyway`. Chỉ khai báo `flyway-core` + `flyway-database-postgresql` → context khởi động bình thường nhưng **migration không chạy im lặng**. Test TC-HEALTH-03 là lớp chặn cuối phát hiện lỗi này.
+
+> **Testcontainers 2.x đổi tên artifact (A4):** bản cũ `org.testcontainers:postgresql` / `org.testcontainers:junit-jupiter` bị đóng băng ở 1.21.x; với Boot 4.1 (Testcontainers 2.x) phải dùng `testcontainers-postgresql` / `testcontainers-junit-jupiter`. Package Java của container giữ nguyên `org.testcontainers.containers.*` — đã xác nhận `./mvnw test-compile` PASS (2026-10-20). Version do BOM của `spring-boot-starter-parent` quản lý, pom không pin (khác với ghi chú cũ yêu cầu import `testcontainers-bom` riêng — không cần).
 
 > **Không cần thêm `spring-boot-starter-test` lõi:** mọi `spring-boot-starter-*-test` đều kéo nó theo transitive. Không thêm `data-jpa-test`/`flyway-test` ở Phase 0 vì chưa dùng slice annotation (`@DataJpaTest`, ...); các test Phase 0 đều chạy qua `@SpringBootTest`.
 
@@ -142,9 +145,10 @@ ecommerce-platform/               <- thư mục gốc repo
 │       └── ci.yml                # GitHub Actions CI
 ├── docs/
 │   ├── project-overview.md
-│   ├── error-codes.md            # tạo ở Phase 0 với skeleton rỗng
+│   ├── error-codes.md            # đã tạo ở Phase 0 — có INTERNAL_SERVER_ERROR
 │   ├── phase-0-foundation.md     # file này
-│   └── phase-1-auth.md           # tạo trước khi làm Phase 1
+│   ├── phase-1-auth.md           # Đã duyệt 2026-10-20 — đang triển khai
+│   └── progress.md               # file local theo dõi tiến độ — KHÔNG commit (AGENTS.md)
 ├── Backend/                      # GIỮ tên theo D-0-07 (đã push lên repo; không đổi case)
 │   ├── pom.xml
 │   ├── mvnw                       # phải có mode executable trong git index (xem R-0-06)
@@ -158,8 +162,9 @@ ecommerce-platform/               <- thư mục gốc repo
 │       │   │   │   ├── config/        # WebConfig (CORS), OpenApiConfig
 │       │   │   │   ├── exception/     # GlobalExceptionHandler
 │       │   │   │   ├── response/      # ApiResponse<T> record
-│       │   │   │   └── security/      # SecurityConfig (permit-all /api/v1/health)
+│       │   │   │   └── security/      # SecurityConfig (permit-all endpoint public + CORS — D-0-06)
 │       │   │   └── health/
+│       │   │       ├── dto/           # HealthResponse.java
 │       │   │       └── controller/    # HealthController
 │       │   └── resources/
 │       │       ├── application.yml    # thay thế application.properties (xóa file cũ)
@@ -168,25 +173,25 @@ ecommerce-platform/               <- thư mục gốc repo
 │       │           └── V1__baseline.sql
 │       └── test/
 │           ├── java/com/app/backend/
-│           │   ├── common/            # BaseIntegrationTest
+│           │   ├── BackendApplicationTests.java   # contextLoads
+│           │   ├── common/                        # BaseIntegrationTest
 │           │   └── health/
-│           │       └── HealthIntegrationTest.java
+│           │       └── HealthIntegrationTest.java # TC-HEALTH-01…04, TC-CORS-01
 │           └── resources/
 │               └── application-test.yml
 └── frontend/
-    ├── package.json                # scripts: dev, build, test (vitest run)
+    ├── package.json                # scripts: dev, build, lint (oxlint), test (vitest run)
     ├── package-lock.json
-    ├── vite.config.js              # build + test config (jsdom, setup file)
+    ├── vite.config.js              # build + test config (jsdom, setup file: src/setupTests.js)
     ├── index.html
     └── src/
         ├── main.jsx
-        ├── App.jsx
-        ├── App.test.jsx            # Vitest smoke test (D-0-09)
-        ├── test/setup.js           # jest-dom matchers
-        ├── api/
-        │   └── health.js           # gọi health endpoint
-        └── components/
-            └── HealthStatus.jsx    # hiển thị kết quả
+        ├── App.jsx                 # hiển thị trạng thái health (UP/DOWN, service, timestamp)
+        ├── App.test.jsx            # Vitest smoke test (D-0-09) — 3 test: UP/DOWN/error
+        ├── setupTests.js           # jest-dom matchers
+        ├── api.js                  # axios instance + getHealth() — dùng chung cho Phase 1
+        ├── index.css
+        └── assets/
 ```
 
 ### 3.2. Quyết định về tên thư mục `Backend/`
@@ -216,13 +221,15 @@ com.app.backend
 │   ├── response
 │   │   └── ApiResponse.java        # generic wrapper <T>
 │   └── security
-│       └── SecurityConfig.java     # SecurityFilterChain: permit-all /api/v1/health
+│       └── SecurityConfig.java     # permit-all endpoint public Phase 0 + `.cors(withDefaults())` (D-0-06)
 └── health
+    ├── dto
+    │   └── HealthResponse.java
     └── controller
         └── HealthController.java
 ```
 
-> **Bắt buộc có `SecurityConfig`:** `spring-boot-starter-security` đã trong `pom.xml` → mặc định Spring Security block mọi request. Không có filter chain permit-all thì `GET /api/v1/health` trả 401 và TC-HEALTH-02 FAIL. Đây là nội dung thực thi của quyết định D-0-06.
+> **Bắt buộc có `SecurityConfig`:** `spring-boot-starter-security` đã trong `pom.xml` → mặc định Spring Security block mọi request. Không có filter chain permit-all thì `GET /api/v1/health` trả 401 và TC-HEALTH-02 FAIL. Theo D-0-06, chain phải **(a)** permit-all các endpoint public Phase 0: `/api/v1/health`, `/actuator/health`, `/swagger-ui.html`, `/swagger-ui/**`, `/api-docs/**`; **(b)** bật CORS của Spring Security bằng `.cors(Customizer.withDefaults())` để `WebConfig` (mục 8.2) có hiệu lực khi request đi qua security chain — thiếu dòng này, preflight OPTIONS có thể không trả CORS header và TC-CORS-01 FAIL. Code hiện tại: `SecurityConfig.java`.
 
 ---
 
@@ -333,21 +340,24 @@ spring:
 #### 5.2.1. Base test class (dùng chung)
 
 ```java
-// Gợi ý — triển khai chính xác thuộc bước code
+// Đã triển khai — khớp BaseIntegrationTest.java (commit 17f8fc4)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestRestTemplate   // Boot 4: @SpringBootTest KHÔNG tự cấu hình bean TestRestTemplate (xem ghi chú dưới)
 @ActiveProfiles("test")
-@Testcontainers
 public abstract class BaseIntegrationTest {
 
-    @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("ecommerce_test")
             .withUsername("test")
             .withPassword("test");
 
-    @Container
     static GenericContainer<?> redis = new GenericContainer<>("redis:7-alpine")
             .withExposedPorts(6379);
+
+    static {
+        postgres.start();   // khởi động 1 lần cho mọi lớp test con trong cùng JVM (D-0-03)
+        redis.start();
+    }
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -360,7 +370,11 @@ public abstract class BaseIntegrationTest {
 }
 ```
 
-**Lý do dùng `static` containers:** Container khởi động một lần cho toàn bộ test class, giảm thời gian test đáng kể so với instance container (mỗi test method).
+**Lý do `static { start(); }` thay vì `@Testcontainers` + `@Container`:** hai cách đều khởi động container ở tầng static (D-0-03). Code hiện tại chọn `static {}` để container khởi động **một lần duy nhất cho mọi lớp test con** trong cùng JVM (extension `@Container` sẽ start/stop theo từng test class); Ryuk tự dọn container khi JVM thoát.
+
+> **TestRestTemplate trên Spring Boot 4 (A2):** class nằm ở package **`org.springframework.boot.resttestclient.TestRestTemplate`** (không còn `org.springframework.boot.test.web.client` như Boot 3). `@SpringBootTest` ở Boot 4 **không còn tự cấu hình bean** `TestRestTemplate` → bắt buộc thêm **`@AutoConfigureTestRestTemplate`** (`org.springframework.boot.resttestclient.autoconfigure`) và dependency test `spring-boot-restclient` (đã có trong `pom.xml`; class `resttestclient` resolve qua transitive — `./mvnw test-compile` PASS 2026-10-20). Lưu ý hướng di chuyển: Boot 4 giới thiệu `RestTestClient` (`@AutoConfigureRestTestClient`) để thay `TestRestTemplate` trong các bản sau — nếu cần ổn định dài hạn có thể chuyển sang MockMvc/RestTestClient; giai đoạn này giữ `TestRestTemplate` để ít thay đổi test.
+
+> **Redis password lệch default (A1):** `application.yml` có default `changeme_redis` (D-0-10) nhưng container Redis trong test **không bật password** → gộp cấu hình sẽ lỗi kết nối. Cách dùng hiện tại: profile `test` đặt `spring.data.redis.password` rỗng trong `application-test.yml` (xem 5.2.2). Cách thay thế tương đương: `registry.add("spring.data.redis.password", () -> "")` trong `@DynamicPropertySource`.
 
 **Reuse giữa các test class:** Cân nhắc bật `testcontainers.reuse.enable=true` trong `~/.testcontainers.properties` cho môi trường local. CI không dùng tính năng này.
 
@@ -382,6 +396,7 @@ spring:
     locations: classpath:db/migration
   data:
     redis:
+      password:               # [A1] để TRỐNG có chủ đích — container Redis trong test không bật password
       # host và port được ghi đè bởi @DynamicPropertySource
 
 logging:
@@ -389,6 +404,8 @@ logging:
     com.app.backend: DEBUG
     org.testcontainers: INFO
 ```
+
+> **Vì sao phải set `password` rỗng (A1):** `application.yml` gốc đặt `${REDIS_PASSWORD:changeme_redis}` (D-0-10) — khớp docker-compose khi dev local, nhưng **lệch** với container Testcontainers (không có password) → kết nối Redis test bị từ chối. Profile `test` ghi đè bằng giá trị rỗng. Đã áp trong code (commit `17f8fc4`); cách thay thế: `registry.add("spring.data.redis.password", () -> "")` ở `BaseIntegrationTest` (xem 5.2.1).
 
 ### 5.3. Test cases Phase 0
 
@@ -456,13 +473,13 @@ Then:
 
 | Test | Loại | Tool | Thời gian ước tính |
 |---|---|---|---|
-| TC-HEALTH-01 | Integration | SpringBootTest + Testcontainers + TestRestTemplate | ~15–30s (cold start) |
-| TC-HEALTH-02 | Integration | SpringBootTest + MockMvc | ~1s (reuse context) |
+| TC-HEALTH-01 | Integration | SpringBootTest + Testcontainers + TestRestTemplate (`@AutoConfigureTestRestTemplate`) | ~15–30s (cold start) |
+| TC-HEALTH-02 | Integration | SpringBootTest + TestRestTemplate | ~1s (reuse context) |
 | TC-HEALTH-03 | Integration | SpringBootTest + JdbcTemplate assertion | ~1s (reuse context) |
-| TC-HEALTH-04 | Integration | SpringBootTest + RedisTemplate | ~1s (reuse context) |
-| TC-CORS-01 | Integration | SpringBootTest + MockMvc | ~1s (reuse context) |
+| TC-HEALTH-04 | Integration | SpringBootTest + RedisConnectionFactory (`ping()`) | ~1s (reuse context) |
+| TC-CORS-01 | Integration | SpringBootTest + TestRestTemplate (preflight OPTIONS) | ~1s (reuse context) |
 
-**Lưu ý:** Unit test với Mockito sẽ xuất hiện từ Phase 1 khi có service logic đáng test. Phase 0 không có service logic, integration test là phù hợp.
+**Lưu ý:** Unit test với Mockito sẽ xuất hiện từ Phase 1 khi có service logic đáng test. Phase 0 không có service logic, integration test là phù hợp. Cả 5 test nằm trong `HealthIntegrationTest` (khớp code 2026-10-20) — riêng TestRestTemplate bắt buộc `@AutoConfigureTestRestTemplate` trên Boot 4 (xem 5.2.1).
 
 ### 5.5. Frontend test (D-0-09)
 
@@ -480,6 +497,7 @@ Then:
 ```
 
 - Chạy bằng `npm --prefix frontend test` (script `"test": "vitest run"`) — đúng lệnh có sẵn trong `AGENTS.md` mục 4.
+- Triển khai hiện tại: `App.test.jsx` gồm 3 test (UP / DOWN / lỗi mạng) — `npm --prefix frontend test` PASS 3/3 (2026-10-20).
 - CI job `frontend` chạy script này sau khi build.
 
 ---
@@ -553,6 +571,11 @@ REDIS_PORT=6379
 
 > **Quy tắc (D-0-10 — default dev đồng bộ 3 nơi):** `docker-compose.yml`, `application.yml` và `.env.example` dùng **cùng một** default dev cho DB/Redis password, để `docker compose up -d` + `./mvnw spring-boot:run` chạy được ngay không cần export biến. `.env.example` được commit (chỉ chứa default dev đã công khai, không phải secret thật); file `.env` **không được commit** (đã có trong `.gitignore`). Trước khi deploy thật, thay default bằng secret riêng qua biến môi trường.
 
+> **Cách `.env` được nạp (rà soát 2026-10-20 — C7):** Spring Boot **không** tự đọc file `.env`; file này chỉ được **docker-compose** nạp để interpolate `POSTGRES_*`/`REDIS_*` khi `docker compose up`. Hệ quả:
+> - `SPRING_PROFILES_ACTIVE=local` trong `.env` **không** kích hoạt profile local cho `./mvnw spring-boot:run` — muốn bật, phải export vào env của process (IDE run config / shell). Cấu hình hiện tại: profile `local` đặt thẳng trong `spring-boot-maven-plugin` nên `spring-boot:run` tự bật (xem 6.3).
+> - `DB_*`/`REDIS_*` trong `.env` cũng chỉ có tác dụng nếu được export vào env trước khi chạy Spring; mặc định không cần (D-0-10 đã đồng bộ default trong `application.yml`).
+> - Integration test không phụ thuộc `.env` — mọi biến test do `application-test.yml` + `@DynamicPropertySource` cung cấp (5.2).
+
 ### 6.3. `application.yml`
 
 ```yaml
@@ -608,6 +631,28 @@ springdoc:
 **Lý do `ddl-auto: validate`:** Flyway quản lý schema; Hibernate chỉ kiểm tra schema khớp entity khi khởi động. Tránh Hibernate tự sửa schema.
 
 **Lý do `show-details: never` cho Actuator:** `/actuator/health` endpoint là public (không auth ở Phase 0); trả `{"status":"UP"}` là đủ. Không để lộ tên DB, Redis host hay stack trace qua Actuator response.
+
+> **Cấu hình profile local (C7 — cập nhật 2026-10-20 theo chốt Q-0-12 / A2(a) của Phase 1):**
+>
+> Ban đầu (Q-0-11) đã thêm `spring.profiles.default: local` vào `application.yml`, nhưng dòng này bật luôn default dev khi deploy quên `SPRING_PROFILES_ACTIVE` — xung đột với fail-fast của Phase 1 (D-1-09). **Cấu hình hiện tại:** gỡ khỏi `application.yml`, đặt profile `local` trong `spring-boot-maven-plugin`:
+>
+> ```xml
+> <plugin>
+>     <groupId>org.springframework.boot</groupId>
+>     <artifactId>spring-boot-maven-plugin</artifactId>
+>     <configuration>
+>         <profiles>
+>             <profile>local</profile>
+>         </profiles>
+>     </configuration>
+> </plugin>
+> ```
+>
+> - Parameter `profiles` thuộc **goal `spring-boot:run`** (docs.spring.io/spring-boot/maven-plugin/run.html — xác nhận trên bản 4.1.1; user property `spring-boot.run.profiles`): `./mvnw spring-boot:run` tự bật `local` → `application-local.yml` (DEBUG logging, default dev) có hiệu lực không cần export env.
+> - **Chỉ `spring-boot:run` bị ảnh hưởng** — `java -jar` (production) không có profile mặc định → thiếu env là fail-fast thật (điều kiện của Phase 1); chạy jar ở local cần `-Dspring.profiles.active=local`; IDE chọn profile trong run configuration.
+> - Integration test không bị ảnh hưởng: surefire không qua goal `run`; `@ActiveProfiles("test")` đặt profile active.
+> - Deploy thật: set `SPRING_PROFILES_ACTIVE` qua env (Phase 6 đặt cứng); kể cả quên, jar cũng **không** rơi vào profile `local` nữa.
+> - **Xác nhận runtime 2026-10-20 (thời điểm còn `spring.profiles.default`):** log ghi `No active profile set, falling back to 1 default profile: "local"` + DEBUG `com.app.backend.*`; `/api/v1/health`, `/actuator/health`, `/swagger-ui.html` = 200. **Verify lại cùng ngày sau khi chuyển sang cấu hình plugin:** `./mvnw spring-boot:run` ghi `The following 1 profile is active: "local"` (không cần `spring.profiles.default`), app khởi động Tomcat 8080 OK.
 
 ### 6.4. Flyway Migration V1
 
@@ -731,6 +776,8 @@ public class WebConfig implements WebMvcConfigurer {
 
 > **Lưu ý:** Origin cụ thể (không dùng `*`) vì `allowCredentials(true)` yêu cầu origin không phải wildcard. Khi deploy production, thay bằng domain thật qua environment variable.
 
+> **Bắt buộc kèm theo ở `SecurityConfig` (A3):** `WebConfig` chỉ có hiệu lực nếu `SecurityFilterChain` bật `.cors(Customizer.withDefaults())` — nếu không, request đi qua security chain sẽ không nhận CORS config của MVC và preflight OPTIONS có thể thiếu `Access-Control-Allow-*` (TC-CORS-01 FAIL). Đồng thời OPTIONS phải nằm trong permit-all. Code hiện tại đã đủ cả hai (`SecurityConfig.java` + `WebConfig.java`).
+
 ### 8.3. Thư viện cài đặt
 
 ```bash
@@ -752,6 +799,8 @@ npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
 
 Cấu hình `test` (jsdom + setup file) đặt trong `vite.config.js` để dùng chung một config.
 
+**Phiên bản thực tế đã cài** (khớp mục 2.1 — đối chiếu `package.json` 2026-10-19): `antd` 6.6.6, `@ant-design/icons` 6.3.4, `axios` 1.20.0, `react`/`react-dom` 19.3.1, `vite` 8.3.4, `vitest` 5.0.5, `@testing-library/react` 16.3.3, `jsdom` 29.1.1; lint bằng `oxlint` (script `lint`).
+
 Không cài thêm thư viện state management (Redux, Zustand, Jotai) theo quy định mục 4.7 của `project-overview.md`.
 
 ---
@@ -762,55 +811,57 @@ Checklist phải được kiểm tra đủ trước khi Phase 0 được chuyể
 
 ### 9.1. Hạ tầng & Môi trường
 
-- [ ] `docker compose up -d` khởi động thành công PostgreSQL 16 và Redis 7.
-- [ ] Cả hai service pass healthcheck (`docker compose ps` hiển thị `healthy`).
-- [ ] `.env.example` tồn tại ở thư mục gốc, không chứa secret thật.
-- [ ] `.env` (nếu có) đã được thêm vào `.gitignore`.
+- [x] `docker compose up -d` khởi động thành công PostgreSQL 16 và Redis 7.
+- [x] Cả hai service pass healthcheck (`docker compose ps` hiển thị `healthy`).
+- [x] `.env.example` tồn tại ở thư mục gốc, không chứa secret thật.
+- [x] `.env` (nếu có) đã được thêm vào `.gitignore`.
 
 ### 9.2. Backend
 
-- [ ] Thư mục giữ nguyên tên `Backend/` (D-0-07); mọi lệnh trong README và CI dùng đúng chữ hoa/thường.
-- [ ] `git ls-files -s Backend/mvnw` hiển thị mode `100755` (đã chạy `git update-index --chmod=+x Backend/mvnw` — R-0-06).
-- [ ] Spring Boot version trong `pom.xml` là **4.1.x** (đã chốt theo `project-overview.md` mục 3.1).
-- [ ] `pom.xml` có `spring-boot-starter-flyway` + `flyway-database-postgresql` (không chỉ `flyway-core`) và `spring-boot-starter-actuator`.
-- [ ] 3 test starter `webmvc-test` / `security-test` / `validation-test` **còn nguyên vẹn** (không bị xóa nhầm — chúng là starter đúng của Boot 4).
-- [ ] Backend khởi động thành công với `(cd Backend && ./mvnw spring-boot:run)` khi Docker services đang chạy.
-- [ ] Flyway migration V1 chạy thành công (log hiển thị `Successfully applied 1 migration`).
-- [ ] `GET /api/v1/health` trả HTTP 200 với JSON đúng format (kiểm tra bằng curl hoặc Swagger).
-- [ ] `GET /actuator/health` trả HTTP 200 và không lộ chi tiết (show-details: never — Q-0-02).
-- [ ] Swagger UI truy cập được tại `http://localhost:8080/swagger-ui.html` (nếu springdoc tương thích Boot 4 — xem R-0-07).
-- [ ] Không có secret hoặc password hardcode trong code hoặc file config được commit (default dev đã công khai ở `.env.example` được phép).
+- [x] Thư mục giữ nguyên tên `Backend/` (D-0-07); mọi lệnh trong README và CI dùng đúng chữ hoa/thường.
+- [x] `git ls-files -s Backend/mvnw` hiển thị mode `100755` (đã chạy `git update-index --chmod=+x Backend/mvnw` — R-0-06).
+- [x] Spring Boot version trong `pom.xml` là **4.1.x** (đã chốt theo `project-overview.md` mục 3.1).
+- [x] `pom.xml` có `spring-boot-starter-flyway` + `flyway-database-postgresql` (không chỉ `flyway-core`) và `spring-boot-starter-actuator`.
+- [x] 3 test starter `webmvc-test` / `security-test` / `validation-test` **còn nguyên vẹn** (không bị xóa nhầm — chúng là starter đúng của Boot 4).
+- [x] Backend khởi động thành công với `(cd Backend && ./mvnw spring-boot:run)` khi Docker services đang chạy.
+- [x] Flyway migration V1 chạy thành công (log hiển thị `Successfully applied 1 migration`).
+- [x] `GET /api/v1/health` trả HTTP 200 với JSON đúng format (kiểm tra bằng curl hoặc Swagger).
+- [x] `GET /actuator/health` trả HTTP 200 và không lộ chi tiết (show-details: never — Q-0-02).
+- [x] Swagger UI truy cập được tại `http://localhost:8080/swagger-ui.html` (springdoc 3.1.1 — đã xác nhận tương thích Boot 4, xem Q-0-09/R-0-07).
+- [x] Không có secret hoặc password hardcode trong code hoặc file config được commit (default dev đã công khai ở `.env.example` được phép).
 
 ### 9.3. Kiểm thử
 
-- [ ] `(cd Backend && ./mvnw clean verify)` chạy thành công, không có test FAIL.
-- [ ] TC-HEALTH-01 PASS.
-- [ ] TC-HEALTH-02 PASS.
-- [ ] TC-HEALTH-03 PASS.
-- [ ] TC-HEALTH-04 PASS.
-- [ ] TC-CORS-01 PASS.
-- [ ] FE-SMOKE-01 PASS (`npm --prefix frontend test`).
+- [x] `(cd Backend && ./mvnw clean verify)` chạy thành công, không có test FAIL.
+- [x] TC-HEALTH-01 PASS.
+- [x] TC-HEALTH-02 PASS.
+- [x] TC-HEALTH-03 PASS.
+- [x] TC-HEALTH-04 PASS.
+- [x] TC-CORS-01 PASS.
+- [x] FE-SMOKE-01 PASS (`npm --prefix frontend test`).
 
 ### 9.4. CI
 
-- [ ] File `.github/workflows/ci.yml` tồn tại với hai job riêng.
-- [ ] Job `backend` chạy xanh trên GitHub Actions (bao gồm `./mvnw clean verify` với Testcontainers).
-- [ ] Job `frontend` chạy xanh trên GitHub Actions (build + `npm test`).
-- [ ] Không có secret trong CI logs.
+- [x] File `.github/workflows/ci.yml` tồn tại với hai job riêng.
+- [x] Job `backend` chạy xanh trên GitHub Actions (bao gồm `./mvnw clean verify` với Testcontainers).
+- [x] Job `frontend` chạy xanh trên GitHub Actions (build + `npm test`).
+- [x] Không có secret trong CI logs.
 
 ### 9.5. Frontend
 
-- [ ] `npm --prefix frontend install` thành công.
-- [ ] `npm --prefix frontend run dev` khởi động tại `http://localhost:5173`.
-- [ ] Frontend gọi `GET /api/v1/health` và hiển thị kết quả trên UI.
-- [ ] Không có CORS error trong browser console.
-- [ ] `npm --prefix frontend test` chạy xanh (script `test` = `vitest run`).
+- [x] `npm --prefix frontend install` thành công.
+- [x] `npm --prefix frontend run dev` khởi động tại `http://localhost:5173`.
+- [x] Frontend gọi `GET /api/v1/health` và hiển thị kết quả trên UI.
+- [x] Không có CORS error trong browser console.
+- [x] `npm --prefix frontend test` chạy xanh (script `test` = `vitest run`).
 
 ### 9.6. Tài liệu
 
-- [ ] `README.md` ở thư mục gốc có hướng dẫn: yêu cầu cài đặt (Node 22, Java 21, Docker), chạy Docker services, chạy backend, chạy frontend, chạy test — lệnh dùng `Backend/` đúng chữ hoa.
-- [ ] `docs/error-codes.md` tồn tại và đã liệt kê `INTERNAL_SERVER_ERROR`.
-- [ ] Tài liệu phase này (`phase-0-foundation.md`) đã được review và chấp nhận trước khi viết code.
+- [x] `README.md` ở thư mục gốc có hướng dẫn: yêu cầu cài đặt (Node 22, Java 21, Docker), chạy Docker services, chạy backend, chạy frontend, chạy test — lệnh dùng `Backend/` đúng chữ hoa.
+- [x] `docs/error-codes.md` tồn tại và đã liệt kê `INTERNAL_SERVER_ERROR`.
+- [x] Tài liệu phase này (`phase-0-foundation.md`) đã được review và chấp nhận trước khi viết code.
+
+> **Tick ngày 2026-10-20 theo chỉ thị của chủ dự án** — bằng chứng từng mục tại `docs/progress.md` (34/34, chủ dự án xác nhận 2026-10-19: smoke test runtime + CI xanh trên push `17f8fc4`). Chạy kiểm chứng lại cùng ngày: `(cd Backend && ./mvnw clean verify)` → BUILD SUCCESS 6/6 test PASS; smoke runtime (`docker compose up -d` + `java -jar`): profile `local` tự kích hoạt (Q-0-11 — thời điểm đó; Q-0-12 sau đó chuyển sang cấu hình plugin, xem 6.3), `/api/v1/health` + `/actuator/health` + `/swagger-ui.html` = 200; `npm --prefix frontend test` 3/3 PASS; `npm --prefix frontend run lint` PASS.
 
 ---
 
@@ -823,13 +874,13 @@ Checklist phải được kiểm tra đủ trước khi Phase 0 được chuyể
 | D-0-01 | Dùng `application.yml` thay vì `application.properties` | YAML hỗ trợ cấu trúc lồng nhau, dễ đọc, phổ biến trong Spring Boot hiện đại | `.properties` phẳng, khó đọc khi có nhiều cấu hình |
 | D-0-02 | `ApiResponse` dùng Java `record` | Immutable, compact syntax, tự có `equals/hashCode/toString`, không cần Lombok | Class thường với `@Data` — thêm dependency không cần thiết cho wrapper đơn giản |
 | D-0-03 | Static containers trong Testcontainers | Container khởi động một lần cho cả test class, giảm thời gian CI | Instance container (mỗi test) — chậm hơn đáng kể |
-| D-0-04 | Ant Design 5.x | Đủ component admin (Table, Form, Modal), không cần CSS tay, phù hợp DoD frontend | Material UI (bundle nhỏ hơn nhưng ít component admin sẵn có hơn) |
+| D-0-04 | Ant Design **6.x** (đã cài 6.6.6) | Đủ component admin (Table, Form, Modal), không cần CSS tay, phù hợp DoD frontend; antd 6 là nhánh hiện hành cho React 19 (mục 2.3, B6) | Ant Design 5.x (thế hệ trước, chỉ bảo trì) / Material UI (bundle nhỏ hơn nhưng ít component admin sẵn có hơn) |
 | D-0-05 | `ddl-auto: validate` | Flyway kiểm soát schema, Hibernate chỉ validate — tránh accident DDL | `ddl-auto: none` (không validate, khó phát hiện sai mapping) / `update` (nguy hiểm) |
-| D-0-06 | Permit-all tạm thời cho `/api/v1/health` | Phase 0 chưa có auth; endpoint phải public để test và CI; thực thi bằng `common/security/SecurityConfig.java` | Tắt Spring Security hoàn toàn — rủi ro quên bật lại ở Phase 1 |
+| D-0-06 | Permit-all tạm thời cho endpoint public Phase 0 (`/api/v1/health`, `/actuator/health`, swagger) + bật CORS ở security (`.cors(Customizer.withDefaults())`) | Phase 0 chưa có auth; các endpoint này phải public để test, CI và xem Swagger; thiếu `.cors(...)` thì CORS của `WebConfig` không áp dụng khi qua security chain | Tắt Spring Security hoàn toàn — rủi ro quên bật lại ở Phase 1; hoặc chỉ permit `/api/v1/health` — swagger/actuator trả 401 |
 | D-0-07 | **Giữ tên thư mục `Backend/`** (không đổi thành `backend/`) | Code đã push lên remote; đổi case trên Windows cần 2 lần `git mv` và sửa mọi tham chiếu tài liệu/CI — chi phí > lợi ích | Đổi sang `backend/` theo overview 4.1 (được cân nhắc nhưng chủ dự án quyết định không làm) |
 | D-0-08 | Node **22 LTS** + React **19** + Vite bản mới nhất | Node 20 EOL 30/04/2026; vẫn thỏa mãn ràng buộc overview (Node 20+, React 18+) | Giữ Node 20/Vite 5/React 18 theo bản doc cũ — bị loại vì EOL và version đã lỗi thời |
 | D-0-09 | Thêm Vitest + 1 smoke test ở Phase 0 | `AGENTS.md` mục 4 có lệnh `npm --prefix frontend test`; nếu Phase 0 không có runner thì lệnh chết | Hoãn sang Phase 1+ — lệnh AGENTS.md sai lệch ngay từ đầu |
-| D-0-10 | Đồng bộ default dev password ở compose + `application.yml` + `.env.example` | Chạy `docker compose up -d` + `spring-boot:run` là chạy được ngay; tránh lỗi NOAUTH do hai default khác nhau | Bắt buộc `.env` không default — an toàn hơn nhưng thêm bước dễ quên cho người xem demo |
+| D-0-10 | Đồng bộ default dev password ở compose + `application.yml` + `.env.example` | Chạy `docker compose up -d` + `spring-boot:run` là chạy được ngay; tránh lỗi NOAUTH do hai default khác nhau; riêng integration test ghi đè password Redis rỗng ở profile `test` vì container Testcontainers không có password (A1 — 5.2.2) | Bắt buộc `.env` không default — an toàn hơn nhưng thêm bước dễ quên cho người xem demo |
 | D-0-11 | Giữ Lombok và `spring-boot-devtools` có sẵn trong skeleton | Đã có từ đầu, không vi phạm quy tắc "không tự cài thêm dependency"; `ApiResponse` vẫn là `record` thuần | Xóa Lombok cho khớp bảng overview 3 — phải ghi nhận là thay đổi dependency ngoài mục đích Phase 0 |
 
 ### 10.2. Rủi ro đã xác định
@@ -841,9 +892,9 @@ Checklist phải được kiểm tra đủ trước khi Phase 0 được chuyể
 | R-0-03 | Testcontainers pull image lần đầu chậm (~2-3 phút) trên CI | **Thấp** | GitHub Actions cache Docker layers; chỉ chậm lần đầu |
 | R-0-04 | `flyway-database-postgresql` phải khai báo riêng từ Flyway 10+ | **Trung bình** | Kiểm tra BOM version và thêm đúng artifact ID theo Flyway docs |
 | R-0-05 | AI có thể sinh code theo kiểu Spring Boot 3 khi viết backend | **Cao** | Tuân thủ `AGENTS.md` mục 5 trước khi viết bất kỳ code backend nào; kiểm tra tên package, starter và annotation |
-| R-0-06 | `Backend/mvnw` đang commit ở mode `100644` + `core.fileMode=false` → CI Linux báo `Permission denied` | **Cao** | Chạy `git update-index --chmod=+x Backend/mvnw` trước khi push; DoD 9.2 kiểm tra lại bằng `git ls-files -s` |
-| R-0-07 | springdoc-openapi bản tương thích Spring Boot 4 chưa được xác nhận | **Trung bình** | Xác nhận artifact + version đúng lúc thêm vào `pom.xml`. Nếu chưa có bản compatible: **không giữ cố DoD "Swagger UI"** — dừng lại hỏi chủ dự án để hoãn swagger sang phase sau |
-| R-0-08 | Lệch default Redis/DB password giữa `docker-compose.yml` và `application.yml` gây NOAUTH khi chạy local | **Đã xử lý** | Đồng bộ default dev ở 3 nơi theo D-0-10; kiểm tra tại DoD 9.1/9.2 |
+| R-0-06 | `Backend/mvnw` đang commit ở mode `100644` + `core.fileMode=false` → CI Linux báo `Permission denied` | **Đã xử lý** | Đã chạy `git update-index --chmod=+x Backend/mvnw` trước khi push; xác nhận `git ls-files -s` = `100755` (DoD 9.2; kiểm tra lại 2026-10-20) |
+| R-0-07 | springdoc-openapi bản tương thích Spring Boot 4 chưa được xác nhận | **Đã xử lý** | springdoc **3.1.1** thêm vào `pom.xml`; Swagger UI load OK 2026-10-19 (Q-0-09, `progress.md` P0-9.2.10); `./mvnw test-compile` PASS 2026-10-20. Nhánh dự phòng (hoãn swagger khỏi DoD) không cần dùng |
+| R-0-08 | Lệch default Redis/DB password giữa `docker-compose.yml` và `application.yml` gây NOAUTH khi chạy local | **Đã xử lý** | Đồng bộ default dev ở 3 nơi theo D-0-10; test profile đặt password Redis rỗng riêng (A1 — 5.2.2); kiểm tra tại DoD 9.1/9.2 |
 
 ### 10.3. Quyết định đã xác nhận (đóng câu hỏi)
 
@@ -857,14 +908,19 @@ Checklist phải được kiểm tra đủ trước khi Phase 0 được chuyể
 | Q-0-06 | Giữ Lombok/devtools trong skeleton? | **Giữ** — D-0-11 | 2026-10-19 |
 | Q-0-07 | Đổi tên `Backend/` → `backend/`? | **Không đổi** — D-0-07 (code đã push; chấp nhận sai lệch tên với overview/AGENTS) | 2026-10-19 |
 | Q-0-08 | Sửa `project-overview.md` và `AGENTS.md` về tên `Backend/`? | **Có** — đã cập nhật cả 2 file cùng ngày; chấm dứt sai lệch (khớp với D-0-07) | 2026-10-19 |
+| Q-0-09 | springdoc-openapi bản nào tương thích Spring Boot 4? | **3.1.1** — thêm vào `pom.xml`, Swagger UI xác nhận load được (đóng O-0-01/R-0-07) | 2026-10-19 |
+| Q-0-10 | Phiên bản Ant Design thực tế? | **antd 6.6.6 + `@ant-design/icons` 6.3.4** (React 19.3.1) theo `package.json` — chốt 6.x, cập nhật mục 2.1/2.3/D-0-04 (B6) | 2026-10-20 |
+| Q-0-11 | Thêm `spring.profiles.default: local` vào `application.yml` (C7)? | ~~Có~~ **Đã thay thế cùng ngày bởi Q-0-12** — áp 2026-10-20 rồi gỡ ngay khi review Phase 1 phát hiện dòng này bật luôn default dev khi deploy quên `SPRING_PROFILES_ACTIVE` (mâu thuẫn fail-fast D-1-09 của Phase 1) | 2026-10-20 |
+| Q-0-12 | Thay `spring.profiles.default: local` bằng cấu hình `<profiles>` của `spring-boot-maven-plugin` (chỉ goal `spring-boot:run`)? | **Có** — theo chốt A2(a) trong review Phase 1; jar production không có profile mặc định → fail-fast thật; parameter `profiles` xác nhận trên docs.spring.io (Boot 4.1.1), xem 6.3 | 2026-10-20 |
 
 ### 10.4. Câu hỏi còn mở (giải quyết lúc triển khai)
 
 | ID | Câu hỏi | Cách xử lý |
 |---|---|---|
-| O-0-01 | springdoc-openapi bản nào tương thích Spring Boot 4? | Xác nhận lúc thêm dependency. Nếu chưa có → dừng, hỏi chủ dự án để hoãn Swagger khỏi DoD Phase 0 (R-0-07) |
+| O-0-01 | ~~springdoc-openapi bản nào tương thích Spring Boot 4?~~ | **Đã xử lý** (Q-0-09) — 3.1.1, Swagger UI load OK; R-0-07 đóng |
 | O-0-02 | ~~`project-overview.md`/`AGENTS.md` vẫn ghi `backend/`~~ | **Đã xử lý** (Q-0-08) — cả 2 file đã sửa về `Backend/` |
-| O-0-03 | Version Ant Design / Testcontainers / springdoc chính xác tại thời điểm cài | Ghi lại phiên bản thực tế đã cài vào mục 2.1 sau khi `pom.xml`/`package.json` ổn định (overview mục 3 bắt buộc khớp bảng) |
+| O-0-03 | ~~Version Ant Design / Testcontainers / springdoc chính xác tại thời điểm cài~~ | **Đã xử lý** (Q-0-10) — đã ghi vào mục 2.1: antd 6.6.6, springdoc 3.1.1, Boot 4.1.1, Testcontainers artifact 2.x theo BOM |
+| O-0-04 | ~~Thêm `spring.profiles.default: local` vào file `application.yml` thật (C7)?~~ | **Đã xử lý** (Q-0-11 → Q-0-12 cùng ngày 2026-10-20) — cuối cùng: profile `local` cấu hình trong `spring-boot-maven-plugin`, không nằm trong `application.yml` |
 
 ---
 
@@ -874,11 +930,11 @@ Thứ tự thực hiện khi bắt đầu Phase 0:
 
 1. **Chuẩn bị skeleton** (R-0-06): `git update-index --chmod=+x Backend/mvnw`; đối chiếu `pom.xml` giữ nguyên 3 test starter Boot 4 (mục 2.4).
 2. **Tạo root files:** `docker-compose.yml`, `.env.example` (mặc định dev đồng bộ — D-0-10), cập nhật `.gitignore` nếu thiếu.
-3. **Cấu hình backend:** bổ sung dependency theo mục 2.4 vào `pom.xml`; viết `application.yml` (thay và **xóa** `application.properties` cũ để tránh 2 file cấu hình cùng tồn tại), `application-local.yml`.
+3. **Cấu hình backend:** bổ sung dependency theo mục 2.4 vào `pom.xml`; viết `application.yml` (thay và **xóa** `application.properties` cũ để tránh 2 file cấu hình cùng tồn tại; cấu hình profile local qua `spring-boot-maven-plugin` — C7/Q-0-12, xem 6.3), `application-local.yml`.
 4. **Tạo Flyway migration V1** (`V1__baseline.sql`).
 5. **Implement `ApiResponse<T>`** và `GlobalExceptionHandler`; ghi `INTERNAL_SERVER_ERROR` vào `docs/error-codes.md`.
-6. **Implement `SecurityConfig`** (permit-all `/api/v1/health` — D-0-06), `WebConfig` (CORS) và `HealthController`.
-7. **Implement `BaseIntegrationTest`** (Testcontainers + `@ActiveProfiles("test")`) và các test case TC-HEALTH-01 đến TC-CORS-01.
+6. **Implement `SecurityConfig`** (permit-all endpoint public Phase 0: `/api/v1/health`, `/actuator/health`, swagger + bật `.cors(Customizer.withDefaults())` — D-0-06), `WebConfig` (CORS) và `HealthController`.
+7. **Implement `BaseIntegrationTest`** (Testcontainers 2.x + `@ActiveProfiles("test")` + `@AutoConfigureTestRestTemplate` — 5.2.1), `application-test.yml` (password Redis rỗng — 5.2.2) và các test case TC-HEALTH-01 đến TC-CORS-01.
 8. **Chạy `(cd Backend && ./mvnw clean verify)`** — xác nhận tất cả test PASS.
 9. **Khởi tạo frontend** (Node 22, Vite/React bản mới nhất), cài Ant Design + Axios + Vitest, implement gọi health endpoint và FE-SMOKE-01.
 10. **Tạo `.github/workflows/ci.yml`** (working-directory `Backend`, Node 22, frontend chạy `npm test`) — push lên GitHub, xác nhận CI xanh.
@@ -887,4 +943,4 @@ Thứ tự thực hiện khi bắt đầu Phase 0:
 
 ---
 
-*Tài liệu soạn ngày 2026-10-19; cùng ngày được duyệt và cập nhật theo các quyết định D-0-07 → D-0-11 / Q-0-03 → Q-0-07. Không sửa sau khi Phase 0 bắt đầu triển khai, trừ khi có quyết định thay đổi từ chủ dự án được ghi rõ lý do.*
+*Tài liệu soạn ngày 2026-10-19; cùng ngày được duyệt và cập nhật theo các quyết định D-0-07 → D-0-11 / Q-0-03 → Q-0-07. Rà soát kỹ thuật bổ sung ngày 2026-10-20 sau khi Phase 0 đã triển khai (commit `17f8fc4`): đối chiếu với code thật và sửa các mục A1–A4 / B5–B6 / C7–C9 (TestRestTemplate trên Boot 4, SecurityConfig permit-all + CORS, Testcontainers 2.x, mốc EOL Spring Boot 4.1, antd 6.x, springdoc 3.1.1, cách nạp `.env`/profile local, cây thư mục). Thay đổi code đi kèm đã qua xác nhận chủ dự án: `spring.profiles.default: local` áp vào `application.yml` ngày 2026-10-20 (O-0-04 → Q-0-11), cùng ngày chuyển sang cấu hình `spring-boot-maven-plugin` theo Q-0-12 sau review Phase 1 (A2(a)); DoD mục 9 tick cùng ngày theo chỉ thị chủ dự án (bằng chứng: `docs/progress.md`).*`

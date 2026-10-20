@@ -15,6 +15,8 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: false
+    placeholders:
+      admin_password_hash: ${ADMIN_PASSWORD_HASH}   # không default — thiếu env (profile local/test không nạp) → fail-fast (D-1-08)
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -22,9 +24,16 @@ spring:
       password: ${REDIS_PASSWORD:changeme_redis}   # default dev đồng bộ với docker-compose (D-0-10)
   jackson:
     time-zone: UTC
+    deserialization:
+      fail-on-unknown-properties: false   # field lạ trong body bị bỏ qua (vd: role khi register — 3.3 phase-1)
 
 server:
   port: 8080
+
+# Cấu hình ứng dụng — Phase 1
+app:
+  jwt:
+    secret: ${JWT_SECRET}   # không default — thiếu env (profile local/test không nạp) → fail-fast (D-1-09)
 
 # Spring Boot Actuator — chỉ expose /actuator/health (không expose info, metrics, ...)
 management:

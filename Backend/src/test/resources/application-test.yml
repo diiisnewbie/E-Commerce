@@ -8,9 +8,17 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+    placeholders:
+      # Bắt buộc — cùng hash dev của Admin@123 (TC-AUTH-15 đăng nhập bằng Admin@123; D-1-08)
+      admin_password_hash: ${ADMIN_PASSWORD_HASH:$2a$10$HYBypW3CZAb8hg7uH5MoZej.Mkk0dp7emjquouW0FwD0ES6E9YdWy}
   data:
     redis:
       password:
+
+# Secret riêng cho test (O-1-03) — khác dev secret của profile local
+app:
+  jwt:
+    secret: ${JWT_SECRET:test-only-jwt-secret-key-32-bytes-minimum-xx}
 
 logging:
   level:

@@ -1,3 +1,14 @@
 logging:
   level:
     com.app.backend: DEBUG
+
+# Dev-only (đã chốt O-1-03) — không dùng ở production.
+# Chỉ được nạp khi profile `local` active (./mvnw spring-boot:run đã cấu hình sẵn).
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-jwt-secret-key-at-least-32-bytes-long-000}
+
+spring:
+  flyway:
+    placeholders:
+      admin_password_hash: ${ADMIN_PASSWORD_HASH:$2a$10$HYBypW3CZAb8hg7uH5MoZej.Mkk0dp7emjquouW0FwD0ES6E9YdWy}

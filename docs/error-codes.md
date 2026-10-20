@@ -11,3 +11,12 @@ Mỗi mã lỗi theo pattern: `DOMAIN_ERROR_CODE` — viết hoa, gạch dưới
 | Mã lỗi | HTTP Status | Mô tả |
 |---|---|---|
 | `INTERNAL_SERVER_ERROR` | 500 | Lỗi server không xác định; `GlobalExceptionHandler` bắt exception chưa được xử lý riêng |
+| `VALIDATION_ERROR` | 400 | Request DTO không hợp lệ (bean validation) hoặc body JSON hỏng; `data` chứa chi tiết trường khi có |
+| `NOT_FOUND` | 404 | Route không tồn tại (`NoResourceFoundException`) |
+| `METHOD_NOT_ALLOWED` | 405 | Method sai cho route (`HttpRequestMethodNotSupportedException`) |
+| `INVALID_CREDENTIALS` | 401 | Email không tồn tại, sai mật khẩu hoặc tài khoản bị khóa (cùng một mã — chống dò tài khoản) |
+| `TOKEN_EXPIRED` | 401 | Access/refresh token hết hạn; client nên gọi refresh |
+| `TOKEN_INVALID` | 401 | Token thiếu, sai chữ ký, sai cấu trúc, sai `type` hoặc hash không khớp |
+| `TOKEN_REVOKED` | 401 | Phiên (`sid`) đã logout, bị thu hồi do dùng lại refresh token, hoặc user đã bị xóa/khóa |
+| `ACCESS_DENIED` | 403 | Đã xác thực nhưng thiếu vai trò cần thiết |
+| `EMAIL_ALREADY_EXISTS` | 409 | Email đã được đăng ký |
