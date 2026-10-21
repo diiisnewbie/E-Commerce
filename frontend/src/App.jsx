@@ -9,6 +9,10 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminPage from './pages/AdminPage'
+import ProductsPage from './pages/ProductsPage'
+import ProductDetailPage from './pages/ProductDetailPage'
+import AdminProductsPage from './pages/AdminProductsPage'
+import AdminCategoriesPage from './pages/AdminCategoriesPage'
 
 const { Header, Content } = Layout
 const { Title, Text } = Typography
@@ -109,15 +113,26 @@ function AppHeader() {
         <Link to="/" style={{ color: '#fff', fontWeight: 700 }}>
           E-Commerce
         </Link>
+        <Link to="/products" style={{ color: '#fff' }}>
+          Sản phẩm
+        </Link>
         {user && (
           <Link to="/profile" style={{ color: '#fff' }}>
             Hồ sơ
           </Link>
         )}
         {user?.role === 'ADMIN' && (
-          <Link to="/admin" style={{ color: '#fff' }}>
-            Quản trị
-          </Link>
+          <Space size="small">
+            <Link to="/admin" style={{ color: '#fff' }}>
+              Quản trị
+            </Link>
+            <Link to="/admin/products" style={{ color: '#fff' }}>
+              SP
+            </Link>
+            <Link to="/admin/categories" style={{ color: '#fff' }}>
+              DM
+            </Link>
+          </Space>
         )}
       </Space>
       <Space size="middle">
@@ -171,6 +186,8 @@ function App() {
           <Content>
             <Routes>
               <Route path="/" element={<HealthPage />} />
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route
@@ -186,6 +203,22 @@ function App() {
                 element={
                   <RequireAdmin>
                     <AdminPage />
+                  </RequireAdmin>
+                }
+              />
+              <Route
+                path="/admin/products"
+                element={
+                  <RequireAdmin>
+                    <AdminProductsPage />
+                  </RequireAdmin>
+                }
+              />
+              <Route
+                path="/admin/categories"
+                element={
+                  <RequireAdmin>
+                    <AdminCategoriesPage />
                   </RequireAdmin>
                 }
               />

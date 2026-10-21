@@ -10,5 +10,8 @@ app:
 
 spring:
   flyway:
+    # Override THAY THẾ default — phải khai đủ cả hai path (D-2-11).
+    # db/seed chứa R__demo_catalog.sql (repeatable) — CHỈ local; test/production không nạp.
+    locations: classpath:db/migration,classpath:db/seed
     placeholders:
       admin_password_hash: ${ADMIN_PASSWORD_HASH:$2a$10$HYBypW3CZAb8hg7uH5MoZej.Mkk0dp7emjquouW0FwD0ES6E9YdWy}

@@ -121,4 +121,50 @@ export function getHealth() {
   return api.get('/api/v1/health')
 }
 
+// ---- Catalog (Phase 2) ----
+
+export function getPublicProducts(params, config) {
+  return api.get('/api/v1/products', { params, ...config })
+}
+
+export function getPublicProduct(id) {
+  return api.get(`/api/v1/products/${id}`)
+}
+
+export function getCategories() {
+  return api.get('/api/v1/categories')
+}
+
+export function getAdminProducts(params, config) {
+  return api.get('/api/v1/admin/products', { params, ...config })
+}
+
+export function getAdminProduct(id) {
+  return api.get(`/api/v1/admin/products/${id}`)
+}
+
+export function createAdminProduct(payload) {
+  return api.post('/api/v1/admin/products', payload)
+}
+
+export function updateAdminProduct(id, payload) {
+  return api.put(`/api/v1/admin/products/${id}`, payload)
+}
+
+export function patchAdminProductStatus(id, status) {
+  return api.patch(`/api/v1/admin/products/${id}/status`, { status })
+}
+
+export function createAdminCategory(payload) {
+  return api.post('/api/v1/admin/categories', payload)
+}
+
+export function updateAdminCategory(id, payload) {
+  return api.put(`/api/v1/admin/categories/${id}`, payload)
+}
+
+export function deleteAdminCategory(id) {
+  return api.delete(`/api/v1/admin/categories/${id}`)
+}
+
 export default api

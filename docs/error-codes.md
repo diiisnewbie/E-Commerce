@@ -20,3 +20,9 @@ Mỗi mã lỗi theo pattern: `DOMAIN_ERROR_CODE` — viết hoa, gạch dưới
 | `TOKEN_REVOKED` | 401 | Phiên (`sid`) đã logout, bị thu hồi do dùng lại refresh token, hoặc user đã bị xóa/khóa |
 | `ACCESS_DENIED` | 403 | Đã xác thực nhưng thiếu vai trò cần thiết |
 | `EMAIL_ALREADY_EXISTS` | 409 | Email đã được đăng ký |
+| `PRODUCT_NOT_FOUND` | 404 | Sản phẩm không tồn tại, hoặc tồn tại nhưng `INACTIVE` khi gọi endpoint công khai |
+| `CATEGORY_NOT_FOUND` | 404 | Danh mục không tồn tại |
+| `SKU_ALREADY_EXISTS` | 409 | SKU đã được dùng cho sản phẩm khác (không phân biệt hoa/thường) |
+| `CATEGORY_NAME_ALREADY_EXISTS` | 409 | Tên danh mục đã tồn tại (không phân biệt hoa/thường) |
+| `CATEGORY_HAS_PRODUCTS` | 409 | Danh mục còn sản phẩm (hoặc race vi phạm FK) — không xóa được |
+| `CONCURRENT_MODIFICATION` | 409 | `version` client gửi không khớp, hoặc entity bị đổi giữa chừng (optimistic lock) |

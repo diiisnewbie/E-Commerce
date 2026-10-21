@@ -602,8 +602,8 @@ Trạng thái dùng thống nhất: `Not started`, `In progress`, `Blocked`, `Do
 | Phase | Tên | Trạng thái | Ghi chú |
 |---|---|---|---|
 | 0 | Khởi tạo | Done | Chủ dự án xác nhận 2026-10-19 (bằng chứng: `docs/progress.md`) |
-| 1 | Authentication & Authorization | Done | Đóng theo chỉ thị chủ dự án 2026-10-20 — verify 39/39 + FE 6/6 + E2E UI; CI xanh chưa xác minh (chưa push) |
-| 2 | Product & Category | Not started | |
+| 1 | Authentication & Authorization | Done | Hoàn thành 2026-10-20 — verify 39/39 + FE 6/6 + E2E UI; push `b84f036`, CI hai job xanh |
+| 2 | Product & Category | In progress | Triển khai xong 2026-10-21 — verify 113/113 + FE 14/14 + lint/build PASS; chờ CI + E2E UI chủ dự án |
 | 3 | Cart | Not started | |
 | 4 | Checkout, Order & Concurrency | Not started | |
 | 5 | Mock Payment & Order Expiration | Not started | |

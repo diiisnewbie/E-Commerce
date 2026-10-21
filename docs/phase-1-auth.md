@@ -552,7 +552,7 @@ await navigator.locks.request('auth-refresh', async () => {
 
 ## 9. Definition of Done — Phase 1
 
-> **Tick ngày 2026-10-20 theo chỉ thị của chủ dự án** — bằng chứng: `docs/progress.md` (backend `./mvnw clean verify` 39/39 PASS, frontend 6/6 PASS, E2E UI do chủ dự án tự test: đăng ký/đăng nhập/refresh…). Riêng mục **"CI hai job xanh sau push" giữ chưa tick** — chưa commit/push (AGENTS mục 2), sẽ xác minh ở lần push đầu của Phase 2.
+> **Tick ngày 2026-10-20 theo chỉ thị của chủ dự án** — bằng chứng: `docs/progress.md` (backend `./mvnw clean verify` 39/39 PASS, frontend 6/6 PASS, E2E UI do chủ dự án tự test: đăng ký/đăng nhập/refresh…, CI hai job xanh sau push `b84f036` do chủ dự án xác nhận trên GitHub Actions).
 
 ### 9.1. Chức năng backend
 
@@ -580,7 +580,7 @@ await navigator.locks.request('auth-refresh', async () => {
 - [x] `(cd Backend && ./mvnw clean verify)` PASS toàn bộ (unit + integration).
 - [x] Đủ 28 TC-AUTH integration + 4 UT ở mục 8 (hoặc ghi rõ case nào cut + lý do — không cắt im lặng).
 - [x] Mỗi endpoint bảo vệ có cặp test được phép/bị từ chối.
-- [ ] CI hai job xanh sau push. *(Chưa xác minh — chưa commit/push; chủ dự án đóng phase 2026-10-20 và chấp nhận hoãn.)*
+- [x] CI hai job xanh sau push. *(Push `b84f036` 2026-10-20 — chủ dự án xác nhận hai job xanh trên GitHub Actions.)*
 
 ### 9.4. Frontend
 

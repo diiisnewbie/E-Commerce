@@ -4,6 +4,7 @@ import com.app.backend.auth.repository.RefreshTokenStore;
 import tools.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,6 +37,10 @@ public class SecurityConfig {
                                 "/api-docs/**")
                         .permitAll()
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/refresh")
+                        .permitAll()
+                        // Phase 2: GET công khai cho catalog (chỉ GET; POST/PUT/DELETE/PATCH rơi vào anyRequest)
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/products/**", "/api/v1/categories/**")
                         .permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())

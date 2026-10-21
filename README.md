@@ -116,6 +116,44 @@ Phase 1 adds two **required** variables — the base `application.yml` declares 
 
 Protected endpoints (e.g. `/api/v1/admin/**`, requires role `ADMIN`) need `Authorization: Bearer <accessToken>`. In Swagger UI click **Authorize** and paste the access token — the `bearerAuth` scheme is preconfigured.
 
+## Product & Category (Phase 2)
+
+### Public catalog
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/v1/products` | Paged list (only `ACTIVE`); filter `categoryId`/`minPrice`/`maxPrice`, `search` (name), `sort` ∈ {`price`,`name`,`createdAt`} with `id` tiebreaker |
+| `GET /api/v1/products/{id}` | Product detail (`INACTIVE` → 404 `PRODUCT_NOT_FOUND`) |
+| `GET /api/v1/categories` | All categories (`name asc`, no pagination) |
+
+### Admin (role `ADMIN`)
+
+| Endpoint | Purpose |
+|---|---|
+| `POST/PUT/DELETE /api/v1/admin/categories[/{id}]` | Category CRUD (delete only when empty; race FK → 409 `CATEGORY_HAS_PRODUCTS`) |
+| `GET /api/v1/admin/products[?status=]` | Admin list (includes `INACTIVE`, `stock`, `version`; search matches name + SKU) |
+| `GET /api/v1/admin/products/{id}` | Full detail for the edit form |
+| `POST /api/v1/admin/products` | Create (SKU uppercase, `initialStock` → `product_inventory`, `version=0`) |
+| `PUT /api/v1/admin/products/{id}` | Update; body **must** include `version` (mismatch → 409 `CONCURRENT_MODIFICATION`); SKU immutable |
+| `PATCH /api/v1/admin/products/{id}/status` | Idempotent status toggle (`ACTIVE` ↔ `INACTIVE`); real change → `version` +1 |
+
+### Demo seed (local only)
+
+`Backend/src/main/resources/db/seed/R__demo_catalog.sql` inserts 3 categories + 5 products (1 `INACTIVE`, 1 stock 0) for local development. It is activated **only** via the `local` profile:
+
+```yaml
+# application-local.yml
+spring.flyway.locations: classpath:db/migration,classpath:db/seed
+```
+
+- **Do not** reintroduce `spring.profiles.default: local` (see O-1-03) — the production jar must never load the demo seed.
+- Integration tests pin `flyway.locations=classpath:db/migration` (test profile) so the seed never contaminates tests.
+- If you change a Phase 2 table schema, update the seed in the same commit (Flyway checksum will flag a mismatch).
+
+### Known limitation: search without diacritics
+
+The PostgreSQL alpine image's default collation does not normalize Vietnamese diacritics, and the current search uses `LIKE lower(name)` without `unaccent`. Searching "dien thoai" matches the seeded (diacritic-free) names; searching "điện thoại" will not match them. Diacritic-insensitive search is deferred (candidate: `unaccent` extension or a normalized search column).
+
 ## CI
 
 GitHub Actions runs two jobs on push/PR to `main`/`develop`:
